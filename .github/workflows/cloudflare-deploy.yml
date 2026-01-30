@@ -67,6 +67,15 @@ jobs:
           echo "INIT_CONFIG=${{ secrets.INIT_CONFIG }}" >> $GITHUB_ENV
           echo "CONFIG_SUBSCRIPTION_URL=${{ secrets.CONFIG_SUBSCRIPTION_URL }}" >> $GITHUB_ENV
 
+      - name: Replace D1 Database ID in wrangler.toml
+        run: |
+          if [ -n "${{ secrets.D1_DATABASE_ID }}" ]; then
+            sed -i 's/REPLACE_WITH_YOUR_D1_DATABASE_ID/${{ secrets.D1_DATABASE_ID }}/g' wrangler.toml
+            echo "D1 Database ID replaced successfully"
+          else
+            echo "D1_DATABASE_ID secret not set, skipping replacement"
+          fi
+
       - name: Update wrangler.toml with environment variables
         run: |
           # Function to append variable to wrangler.toml if it has a value

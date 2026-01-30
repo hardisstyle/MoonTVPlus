@@ -53,36 +53,31 @@ function getD1Adapter(): any {
   const isCloudflare = process.env.CF_PAGES === '1' || process.env.BUILD_TARGET === 'cloudflare';
 
   // 生产环境：Cloudflare Workers/Pages
-  if (isCloudflare && typeof process !== 'undefined' && (process as any).env?.DB) {
+  if (isCloudflare) {
     console.log('Using Cloudflare D1 database');
     return new CloudflareD1Adapter((process as any).env.DB);
   }
 
   // 开发环境：better-sqlite3
-  try {
-    const Database = require('better-sqlite3');
-    const path = require('path');
-    const fs = require('fs');
+  const Database = require('better-sqlite3');
+  const path = require('path');
+  const fs = require('fs');
 
-    const dbPath = path.join(process.cwd(), '.data', 'moontv.db');
+  const dbPath = path.join(process.cwd(), '.data', 'moontv.db');
 
-    // 检查数据库文件是否存在
-    if (!fs.existsSync(dbPath)) {
-      console.error('❌ SQLite database not found. Please run: npm run init:sqlite');
-      throw new Error('SQLite database not initialized');
-    }
-
-    const db = new Database(dbPath);
-    db.pragma('journal_mode = WAL'); // 启用 WAL 模式提升性能
-
-    console.log('Using SQLite database (development mode)');
-    console.log('Database location:', dbPath);
-
-    return new SQLiteAdapter(db);
-  } catch (err) {
-    console.error('Failed to initialize SQLite:', err);
-    throw err;
+  // 检查数据库文件是否存在
+  if (!fs.existsSync(dbPath)) {
+    console.error('❌ SQLite database not found. Please run: npm run init:sqlite');
+    throw new Error('SQLite database not initialized');
   }
+
+  const db = new Database(dbPath);
+  db.pragma('journal_mode = WAL'); // 启用 WAL 模式提升性能
+
+  console.log('Using SQLite database (development mode)');
+  console.log('Database location:', dbPath);
+
+  return new SQLiteAdapter(db);
 }
 
 // 单例存储实例
