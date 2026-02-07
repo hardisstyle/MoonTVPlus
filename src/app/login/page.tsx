@@ -85,6 +85,14 @@ function LoginPageClient() {
 
   const { siteName } = useSite();
 
+  // 处理URL中的error参数
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+    }
+  }, [searchParams]);
+
   // 在客户端挂载后设置配置
   useEffect(() => {
     if (typeof window !== 'undefined') {
